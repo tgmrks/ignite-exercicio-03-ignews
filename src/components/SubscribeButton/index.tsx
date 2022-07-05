@@ -1,4 +1,5 @@
 import { signIn, useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 import { api } from '../../services/api';
 import { getStripesJs } from '../../services/stripes-js';
 import styles from './styles.module.scss'
@@ -11,11 +12,17 @@ export function SubscribeButton( { priceId }: SubscribeButtonProps) {
 
     //const [session]: any = useSession();
     const { data: session} = useSession();
+    const router = useRouter();
 
     async function handleSubscribe() {
         if(!session) {
             signIn('github')
             return;
+        }
+
+        if (session.activeSubscription) {
+            router.push('/posts')
+            return
         }
         //creat checkout session with Stipe
         try {
